@@ -17,6 +17,9 @@ namespace Player {
             var photonView = GetComponent<PhotonView>();
             var team = (TeamSelector.Team)photonView.InstantiationData[0];
             meshRenderer.material = team == TeamSelector.Team.Blue ? blueMaterial : redMaterial;
+#if UNITY_EDITOR
+            gameObject.name = $"{photonView.Owner.NickName} Player Controller";
+#endif
         }
         #endregion
     }

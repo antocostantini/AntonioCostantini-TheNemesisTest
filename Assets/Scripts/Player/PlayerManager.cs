@@ -22,6 +22,9 @@ namespace Player {
         #region Behaviour Callbacks
         private void Awake() {
             _photonView = GetComponent<PhotonView>();
+#if UNITY_EDITOR
+            gameObject.name = $"{_photonView.Owner.NickName} Player Manager";
+#endif
         }
 
         private void Start() {
