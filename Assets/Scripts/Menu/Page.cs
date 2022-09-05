@@ -1,6 +1,9 @@
 using UnityEngine.EventSystems;
 
 namespace Menu {
+    /// <summary>
+    /// A single page of the menu
+    /// </summary>
     public class Page : UIBehaviour {
         #region Private Variables
         private bool _isOpen;

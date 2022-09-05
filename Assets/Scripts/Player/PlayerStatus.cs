@@ -3,6 +3,9 @@ using Photon.Pun;
 using UnityEngine;
 
 namespace Player {
+    /// <summary>
+    /// Component used to change the player controller status
+    /// </summary>
     public class PlayerStatus : MonoBehaviour
     {
         #region Public Variables

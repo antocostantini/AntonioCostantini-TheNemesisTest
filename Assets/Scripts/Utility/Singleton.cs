@@ -17,7 +17,6 @@ namespace Utility {
                 return;
             }
 
-            //DontDestroyOnLoad(_instance.gameObject);
             _instance = this as T;
         }
         #endregion

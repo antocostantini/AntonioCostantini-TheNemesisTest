@@ -5,6 +5,9 @@ using Photon.Pun;
 using UnityEngine;
 
 namespace Player {
+    /// <summary>
+    /// Component used to manage the player's controller
+    /// </summary>
     [RequireComponent(typeof(PhotonView))]
     public class PlayerManager : MonoBehaviour {
         #region Public Variables
@@ -34,6 +37,9 @@ namespace Player {
         #endregion
 
         #region private Methods
+        /// <summary>
+        /// Spawns the player controller over the network
+        /// </summary>
         private void CreateController() {
             var spawn = GameManager.Instance.GetSpawn(Team);
             PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", playerControllerPrefab.name), spawn.position, spawn.rotation, data: new object[]{Team});

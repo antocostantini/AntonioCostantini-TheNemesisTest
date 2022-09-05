@@ -23,7 +23,7 @@ namespace Network {
         private void Start() {
             _menuManager = MenuManager.Instance;
             _menuManager.OpenPage(_menuManager.ConnectionPage);
-            Connect();
+            PhotonNetwork.ConnectUsingSettings();
         }
         
         public override void OnConnectedToMaster() {
@@ -79,6 +79,10 @@ namespace Network {
         #endregion
         
         #region Public Methods
+        /// <summary>
+        /// Begins searching for an opponent<br/>
+        /// If no room is found, it creates a new one
+        /// </summary>
         public void StartMatchmaking() {
             var roomOptions = new RoomOptions {
                 MaxPlayers = 2
@@ -87,25 +91,44 @@ namespace Network {
             _menuManager.OpenPage(_menuManager.SearchingPage);
         }
         
+        /// <summary>
+        /// Leaves the current room to go back to the main menu
+        /// </summary>
         public void BackToMenu() {
             PhotonNetwork.LeaveRoom();
         }
 
+        /// <summary>
+        /// Changes the player's username
+        /// </summary>
+        /// <param name="username">The new username</param>
         public void ChangeUsername(string username) {
             PhotonNetwork.NickName = username;
         }
 
+        /// <summary>
+        /// Sets both players' usernames for the menu
+        /// </summary>
         private void SetPlayersUsernames() {
             string user1 = PhotonNetwork.PlayerList[0].NickName;
             string user2 = PhotonNetwork.PlayerList[1].NickName;
             photonView.RPC(nameof(SetPlayersUsernamesRPC), RpcTarget.All, user1, user2);
         }
 
+        /// <summary>
+        /// RPC to set the players' usernames on both clients 
+        /// </summary>
+        /// <param name="user1">Player 1 username</param>
+        /// <param name="user2">Player 2 username</param>
         [PunRPC]
         private void SetPlayersUsernamesRPC(string user1, string user2) {
             _menuManager.SetPlayersUsernames(user1, user2);
         }
 
+        /// <summary>
+        /// Selects the team for the local player
+        /// </summary>
+        /// <param name="team"></param>
         public void SelectTeam(TeamSelector.Team team) {
             photonView.RPC(nameof(SelectTeamRPC), RpcTarget.All, team, PhotonNetwork.IsMasterClient);
             roomManager.Team = team;
@@ -115,6 +138,11 @@ namespace Network {
             SetReady(false);
         }
 
+        /// <summary>
+        /// RPC to sync the team selection for both players
+        /// </summary>
+        /// <param name="team">The selected team</param>
+        /// <param name="isPlayer1">The player that has selected it</param>
         [PunRPC]
         public void SelectTeamRPC(TeamSelector.Team team, bool isPlayer1) {
             if (isPlayer1)
@@ -124,10 +152,18 @@ namespace Network {
             _menuManager.SelectTeam(team, isPlayer1);
         }
         
+        /// <summary>
+        /// Sets the player as ready or not
+        /// </summary>
         public void SetReady(bool ready) {
             photonView.RPC(nameof(SetReadyRpc), RpcTarget.MasterClient, ready, PhotonNetwork.IsMasterClient);
         }
         
+        /// <summary>
+        /// RPC to notify the master client when a player is ready or not, and eventually load the main scene
+        /// </summary>
+        /// <param name="ready">If the player is ready or not</param>
+        /// <param name="isPlayer1">The player that has selected it</param>
         [PunRPC]
         private void SetReadyRpc(bool ready, bool isPlayer1) {
             if (isPlayer1)
@@ -137,12 +173,6 @@ namespace Network {
             
             if(_isPlayer1Ready && _isPlayer2Ready && _player1Team != _player2Team) 
                 PhotonNetwork.LoadLevel(1);
-        }
-        #endregion
-        
-        #region Private Methods
-        private void Connect() {
-            PhotonNetwork.ConnectUsingSettings();
         }
         #endregion
     }
