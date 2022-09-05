@@ -11,6 +11,8 @@ namespace Menu {
         #region Public Variables
         [SerializeField] private Page connectionPage;
         [SerializeField] private Page menuPage;
+        [SerializeField] private Page searchingPage;
+        [SerializeField] private Page preselectionPage;
 
         [Space] [SerializeField] private Button matchmakingButton;
 
@@ -19,6 +21,8 @@ namespace Menu {
         #region Properties
         public Page ConnectionPage => connectionPage;
         public Page MenuPage => menuPage;
+        public Page SearchingPage => searchingPage;
+        public Page PreselectionPage => preselectionPage;
         #endregion
         
         #region Private Methods
@@ -43,6 +47,11 @@ namespace Menu {
 
         public void OnUsernameChanged(string username) {
             matchmakingButton.interactable = !string.IsNullOrWhiteSpace(username);
+        }
+        
+        public void OnUsernameEndEdit(string username) {
+            if(!string.IsNullOrWhiteSpace(username))
+               Network.MenuNetworkManager.Instance.ChangeUsername(username);
         }
         
         public void QuitGame() {
