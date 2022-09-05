@@ -54,14 +54,14 @@ namespace Network {
             Debug.LogError("Create room failed\n"+message);
         }
         
-        public override void OnPlayerEnteredRoom(Player newPlayer) {
+        public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer) {
             base.OnPlayerEnteredRoom(newPlayer);
             Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count);
             _menuManager.OpenPage(_menuManager.PreselectionPage);
             SetPlayersUsernames();
         }
 
-        public override void OnPlayerLeftRoom(Player otherPlayer) {
+        public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
             base.OnPlayerLeftRoom(otherPlayer);
             Debug.Log(otherPlayer.NickName + " has left the room: " + PhotonNetwork.CurrentRoom.Players.Count);
             BackToMenu();
@@ -132,12 +132,11 @@ namespace Network {
         private void SetReadyRpc(bool ready, bool isPlayer1) {
             if (isPlayer1)
                 _isPlayer1Ready = ready;
-            else {
+            else
                 _isPlayer2Ready = ready;
-            }
-            if(_isPlayer1Ready && _isPlayer2Ready && _player1Team != _player2Team) {
-                Debug.Log("Starting game");
-            }
+            
+            if(_isPlayer1Ready && _isPlayer2Ready && _player1Team != _player2Team) 
+                PhotonNetwork.LoadLevel(1);
         }
         #endregion
         
