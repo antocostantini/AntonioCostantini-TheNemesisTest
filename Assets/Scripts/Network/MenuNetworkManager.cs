@@ -13,7 +13,6 @@ namespace Network {
         
         #region Private Variables
         private MenuManager _menuManager;
-        
         private bool _isPlayer1Ready;
         private bool _isPlayer2Ready;
         private TeamSelector.Team _player1Team;
@@ -41,17 +40,8 @@ namespace Network {
         public override void OnJoinedRoom() {
             base.OnJoinedRoom();
             Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Players.Count);
-            if (PhotonNetwork.IsMasterClient) {
-                Debug.Log("Master client!");
-            }
-            else {
+            if (!PhotonNetwork.IsMasterClient) 
                 _menuManager.OpenPage(_menuManager.PreselectionPage);
-            }
-        }
-
-        public override void OnCreatedRoom() {
-            base.OnCreatedRoom();
-            Debug.Log("Created room");
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message) {
@@ -68,7 +58,7 @@ namespace Network {
             base.OnPlayerEnteredRoom(newPlayer);
             Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count);
             _menuManager.OpenPage(_menuManager.PreselectionPage);
-            SetPlayerUsernames();
+            SetPlayersUsernames();
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer) {
@@ -105,15 +95,15 @@ namespace Network {
             PhotonNetwork.NickName = username;
         }
 
-        private void SetPlayerUsernames() {
+        private void SetPlayersUsernames() {
             string user1 = PhotonNetwork.PlayerList[0].NickName;
             string user2 = PhotonNetwork.PlayerList[1].NickName;
-            photonView.RPC(nameof(SetPlayerUsernamesRPC), RpcTarget.All, user1, user2);
+            photonView.RPC(nameof(SetPlayersUsernamesRPC), RpcTarget.All, user1, user2);
         }
 
         [PunRPC]
-        private void SetPlayerUsernamesRPC(string user1, string user2) {
-            _menuManager.SetPlayersUsername(user1, user2);
+        private void SetPlayersUsernamesRPC(string user1, string user2) {
+            _menuManager.SetPlayersUsernames(user1, user2);
         }
 
         public void SelectTeam(TeamSelector.Team team) {

@@ -53,7 +53,7 @@ namespace Menu {
             _currentPage = null;
         }
 
-        public void SetPlayersUsername(string username1, string username2) {
+        public void SetPlayersUsernames(string username1, string username2) {
             player1.GetComponent<TMP_Text>().SetText(username1);
             player2.GetComponent<TMP_Text>().SetText(username2);
         }
