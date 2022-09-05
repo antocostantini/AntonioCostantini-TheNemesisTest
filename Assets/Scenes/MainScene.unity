@@ -933,8 +933,8 @@ GameObject:
   - component: {fileID: 1044212643}
   - component: {fileID: 1044212642}
   - component: {fileID: 1044212641}
-  - component: {fileID: 1044212647}
   - component: {fileID: 1044212646}
+  - component: {fileID: 1044212647}
   - component: {fileID: 1044212645}
   m_Layer: 6
   m_Name: Ball
