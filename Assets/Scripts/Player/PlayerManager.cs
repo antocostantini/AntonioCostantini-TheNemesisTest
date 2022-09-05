@@ -1,4 +1,5 @@
 using System.IO;
+using Core;
 using Menu;
 using Photon.Pun;
 using UnityEngine;
@@ -31,8 +32,8 @@ namespace Player {
 
         #region private Methods
         private void CreateController() {
-            //Transform spawn = 
-            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", playerControllerPrefab.name), Vector3.zero, Quaternion.identity, data: new object[]{Team});
+            var spawn = GameManager.Instance.GetSpawn(Team);
+            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", playerControllerPrefab.name), spawn.position, spawn.rotation, data: new object[]{Team});
         }
         #endregion
     }
