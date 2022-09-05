@@ -39,7 +39,7 @@ namespace Network {
         
         public override void OnJoinedRoom() {
             base.OnJoinedRoom();
-            Debug.Log("Joined room: " + PhotonNetwork.CurrentRoom.Players.Count);
+            Debug.Log("Joined room with " + PhotonNetwork.CurrentRoom.Players.Count + " players");
             if (!PhotonNetwork.IsMasterClient) 
                 _menuManager.OpenPage(_menuManager.PreselectionPage);
         }
@@ -56,14 +56,14 @@ namespace Network {
         
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer) {
             base.OnPlayerEnteredRoom(newPlayer);
-            Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count);
+            Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count + " players");
             _menuManager.OpenPage(_menuManager.PreselectionPage);
             SetPlayersUsernames();
         }
 
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
             base.OnPlayerLeftRoom(otherPlayer);
-            Debug.Log(otherPlayer.NickName + " has left the room: " + PhotonNetwork.CurrentRoom.Players.Count);
+            Debug.Log(otherPlayer.NickName + " has left the room");
             BackToMenu();
         }
         

@@ -42,6 +42,7 @@ namespace Player {
         #region Private Methods
         private void RemoveComponents() {
             Destroy(GetComponent<PlayerInput>());
+            Destroy((PlayerMovement)this);
             //_rigidbody.isKinematic = true;
         }
         #endregion
