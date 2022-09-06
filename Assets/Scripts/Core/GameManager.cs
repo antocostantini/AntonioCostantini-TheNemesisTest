@@ -94,7 +94,14 @@ namespace Core {
             ResetGame();
 
             if (_isGameFinished) {
-                photonView.RPC(nameof(EndGameRPC), RpcTarget.All);
+                var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
+#pragma warning disable CS8509
+                string username = winner switch {
+                    TeamSelector.Team.Blue => BluePlayer.Username,
+                    TeamSelector.Team.Red => RedPlayer.Username 
+                };
+#pragma warning restore CS8509
+                photonView.RPC(nameof(EndGameRPC), RpcTarget.All, winner, username);
             }
         }
 
@@ -131,9 +138,7 @@ namespace Core {
         /// RPC to end the game and deactivate player controls
         /// </summary>
         [PunRPC] 
-        private void EndGameRPC() {
-            var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
-            string username = BluePlayer.GetComponent<PhotonView>().Owner.NickName;
+        private void EndGameRPC(TeamSelector.Team winner, string username) {
             _uiManager.EndPanel(winner, username);
             if (BluePlayer != null) BluePlayer.DeactivateControls();
             if (RedPlayer != null) RedPlayer.DeactivateControls();

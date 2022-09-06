@@ -19,15 +19,21 @@ namespace Player {
 
         #region Private Variables
         private TeamSelector.Team _team;
+        private PhotonView _photonView;
+        #endregion
+
+        #region Properties
+        public PhotonView PhotonView => _photonView;
+        public string Username => _photonView.Owner.NickName;
         #endregion
 
         #region Behaviour Callbacks
         private void Awake() {
-            var photonView = GetComponent<PhotonView>();
-            _team = (TeamSelector.Team)photonView.InstantiationData[0];
+            _photonView = GetComponent<PhotonView>();
+            _team = (TeamSelector.Team)_photonView.InstantiationData[0];
             meshRenderer.material = _team == TeamSelector.Team.Blue ? blueMaterial : redMaterial;
 #if UNITY_EDITOR
-            gameObject.name = $"{photonView.Owner.NickName} Player Controller";
+            gameObject.name = $"{_photonView.Owner.NickName} Player Controller";
 #endif
         }
 
