@@ -13,6 +13,8 @@ namespace Network {
         private bool _isPlayer2Ready;
         private TeamSelector.Team _player1Team;
         private TeamSelector.Team _player2Team;
+
+        private bool _otherPlayerDisconnected = false;
         #endregion
         
         #region Behaviour Callbacks
@@ -31,7 +33,13 @@ namespace Network {
 
         public override void OnJoinedLobby() {
             base.OnJoinedLobby();
-            _menuManager.OpenPage(_menuManager.MenuPage);
+            if (_otherPlayerDisconnected) { // if we come from a disconnection, we return in the matchmaking
+                _otherPlayerDisconnected = false;
+                StartMatchmaking();
+            }
+            else {  // otherwise we simply open the menu
+                _menuManager.OpenPage(_menuManager.MenuPage);
+            }
         }
         
         public override void OnJoinedRoom() {
@@ -63,7 +71,8 @@ namespace Network {
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
             base.OnPlayerLeftRoom(otherPlayer);
             Debug.Log(otherPlayer.NickName + " has left the room");
-            BackToMenu();
+            _otherPlayerDisconnected = true;
+            PhotonNetwork.LeaveRoom();
         }
         
         public override void OnLeftRoom() {
@@ -73,7 +82,9 @@ namespace Network {
             _menuManager.CheckReadyButtonAs(false);
             _player1Team = _player2Team = TeamSelector.Team.Neutral;
             _menuManager.SetReadyButtonAsInteractable(false);
-            _menuManager.OpenPage(_menuManager.MenuPage);
+            if (!_otherPlayerDisconnected) {
+                _menuManager.OpenPage(_menuManager.MenuPage);
+            }
         }
         #endregion
         
