@@ -2,7 +2,6 @@ using Menu;
 using Network;
 using Photon.Pun;
 using Player;
-using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -54,7 +53,6 @@ namespace Core {
             Destroy(RoomManager.Instance.gameObject);
             SceneManager.LoadScene(0);
         }
-
         #endregion
 
         #region Public Methods
@@ -72,6 +70,10 @@ namespace Core {
             };
         }
 
+        /// <summary>
+        /// Scores a goal for the selected team, and checks if the game is over
+        /// </summary>
+        /// <param name="team">The team that scored</param>
         public void Goal(TeamSelector.Team team) {
             switch (team) {
                 case TeamSelector.Team.Blue:
@@ -92,18 +94,24 @@ namespace Core {
             ResetGame();
 
             if (_isGameFinished) {
-                var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
-                string username = BluePlayer.GetComponent<PhotonView>().Owner.NickName;
-                photonView.RPC(nameof(EndGameRPC), RpcTarget.All, winner, username);
+                photonView.RPC(nameof(EndGameRPC), RpcTarget.All);
             }
         }
 
+        /// <summary>
+        /// Leaves the room to return back to the menu
+        /// </summary>
         public void BackToMenu() {
             PhotonNetwork.LeaveRoom();
         }
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// Gets a random position inside of a game object
+        /// </summary>
+        /// <param name="zone">The zone</param>
+        /// <returns>The random position</returns>
         private Vector3 GetRandomPositionInside(Renderer zone) {
             var bounds = zone.bounds;
             var min = bounds.min;
@@ -111,18 +119,29 @@ namespace Core {
             return min + Random.Range(0f, 1f) * (max - min);
         }
 
+        /// <summary>
+        /// RPC to update the teams' points
+        /// </summary>
         [PunRPC]
         private void SetPointsRPC(int bluePoints, int redPoints) {
             _uiManager.SetPoints(bluePoints, redPoints);
         }
 
+        /// <summary>
+        /// RPC to end the game and deactivate player controls
+        /// </summary>
         [PunRPC] 
-        private void EndGameRPC(TeamSelector.Team winner, string username) {
+        private void EndGameRPC() {
+            var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
+            string username = BluePlayer.GetComponent<PhotonView>().Owner.NickName;
             _uiManager.EndPanel(winner, username);
             if (BluePlayer != null) BluePlayer.DeactivateControls();
             if (RedPlayer != null) RedPlayer.DeactivateControls();
         }
         
+        /// <summary>
+        /// Resets the positions for the next round
+        /// </summary>
         private void ResetGame() {
             var blueGoalPos = GetRandomPositionInside(blueGoalSpawnZone);
             var redGoalPos = GetRandomPositionInside(redGoalSpawnZone);
@@ -130,6 +149,11 @@ namespace Core {
             photonView.RPC(nameof(ResetGameRPC), RpcTarget.All, blueGoalPos, redGoalPos);
         }
         
+        /// <summary>
+        /// RPC to reset the positions over the network
+        /// </summary>
+        /// <param name="blueGoalPos"></param>
+        /// <param name="redGoalPos"></param>
         [PunRPC]
         private void ResetGameRPC(Vector3 blueGoalPos, Vector3 redGoalPos) {
             ball.ResetBall(ballSpawnPoint.position);

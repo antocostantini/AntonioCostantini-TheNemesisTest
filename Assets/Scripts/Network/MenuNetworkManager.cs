@@ -7,12 +7,7 @@ using Utility;
 namespace Network {
     [RequireComponent(typeof(PhotonView))]
     public class MenuNetworkManager : NetworkSingleton<MenuNetworkManager> {
-        #region Public Variables
-        //[SerializeField] private RoomManager roomManager;
-        #endregion
-        
         #region Private Variables
-        private RoomManager _roomManager;
         private MenuManager _menuManager;
         private bool _isPlayer1Ready;
         private bool _isPlayer2Ready;
@@ -22,7 +17,6 @@ namespace Network {
         
         #region Behaviour Callbacks
         private void Start() {
-            _roomManager = RoomManager.Instance;
             _menuManager = MenuManager.Instance;
             _menuManager.OpenPage(_menuManager.ConnectionPage);
             if(!PhotonNetwork.IsConnected)
@@ -62,6 +56,7 @@ namespace Network {
             Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count + " players");
             _menuManager.OpenPage(_menuManager.PreselectionPage);
             SetPlayersUsernames();
+            // we close the room when its full to prevent other players from entering if one player leaves
             PhotonNetwork.CurrentRoom.IsOpen = false;
         }
 
@@ -135,7 +130,7 @@ namespace Network {
         /// <param name="team"></param>
         public void SelectTeam(TeamSelector.Team team) {
             photonView.RPC(nameof(SelectTeamRPC), RpcTarget.All, team, PhotonNetwork.IsMasterClient);
-            _roomManager.Team = team;
+            RoomManager.Instance.Team = team;
             _menuManager.SetReadyButtonAsInteractable(team != TeamSelector.Team.Neutral);
             
             _menuManager.CheckReadyButtonAs(false);

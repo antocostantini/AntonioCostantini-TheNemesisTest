@@ -1,4 +1,3 @@
-using System;
 using Core;
 using Menu;
 using Photon.Pun;
@@ -45,10 +44,17 @@ namespace Player {
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Sets the position of this player
+        /// </summary>
+        /// <param name="pos">The new position</param>
         public void SetPosition(Vector3 pos) {
             transform.position = pos;
         }
 
+        /// <summary>
+        /// Deactivates the controls for this player
+        /// </summary>
         public void DeactivateControls() {
             if (TryGetComponent<PlayerInput>(out var playerInput)) {
                 playerInput.enabled = false;

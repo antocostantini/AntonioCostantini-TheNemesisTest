@@ -3,6 +3,9 @@ using Photon.Pun;
 using UnityEngine;
 
 namespace Core {
+    /// <summary>
+    /// Component used to score goals
+    /// </summary>
     public class Goal : MonoBehaviour {
         #region Public Variables
         [SerializeField] private TeamSelector.Team team;
