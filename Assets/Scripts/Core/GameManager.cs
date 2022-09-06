@@ -53,6 +53,16 @@ namespace Core {
             Destroy(RoomManager.Instance.gameObject);
             SceneManager.LoadScene(0);
         }
+
+        public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
+            base.OnPlayerLeftRoom(otherPlayer);
+            if (Equals(BluePlayer.PhotonView.Owner, otherPlayer)) {
+                EndGameForDisconnection(TeamSelector.Team.Red, RedPlayer.Username, otherPlayer.NickName);
+            }
+            else {
+                EndGameForDisconnection(TeamSelector.Team.Blue, BluePlayer.Username, otherPlayer.NickName);
+            }
+        }
         #endregion
 
         #region Public Methods
@@ -134,6 +144,15 @@ namespace Core {
             _uiManager.SetPoints(bluePoints, redPoints);
         }
 
+        /// <summary>
+        /// Ends the game for disconnection and deactivate player controls
+        /// </summary>
+        private void EndGameForDisconnection(TeamSelector.Team winner, string username, string disconnectedPlayer) {
+            _uiManager.EndPanelForDisconnection(winner, username, disconnectedPlayer);
+            if (BluePlayer != null) BluePlayer.DeactivateControls();
+            if (RedPlayer != null) RedPlayer.DeactivateControls();
+        }
+        
         /// <summary>
         /// RPC to end the game and deactivate player controls
         /// </summary>
