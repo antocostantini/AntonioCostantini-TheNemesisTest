@@ -1,7 +1,11 @@
 using Menu;
+using Network;
 using Photon.Pun;
+using Player;
 using TMPro;
+using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utility;
 using Random = UnityEngine.Random;
 
@@ -23,26 +27,34 @@ namespace Core {
         [Space]
         [SerializeField] private MeshRenderer blueGoalSpawnZone;
         [SerializeField] private MeshRenderer redGoalSpawnZone;
-        [Space]
-        [SerializeField] private TMP_Text bluePointsText;
-        [SerializeField] private TMP_Text redPointsText;
+        
         #endregion
 
         #region Private Variables
+        private UIManager _uiManager;
         private int _bluePoints = 0;
         private int _redPoints = 0;
+        private bool _isGameFinished = false;
         #endregion
 
         #region Properties
-        public Transform BluePlayer {private get; set; }
-        public Transform RedPlayer {private get; set; }
+        public PlayerStatus BluePlayer {private get; set; }
+        public PlayerStatus RedPlayer {private get; set; }
         #endregion
 
         #region Behaviour Callbacks
         private void Start() {
+            _uiManager = UIManager.Instance;
             if(PhotonNetwork.IsMasterClient)
                 ResetGame();
         }
+
+        public override void OnLeftRoom() {
+            base.OnLeftRoom();
+            Destroy(RoomManager.Instance.gameObject);
+            SceneManager.LoadScene(0);
+        }
+
         #endregion
 
         #region Public Methods
@@ -72,10 +84,22 @@ namespace Core {
             photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _bluePoints, _redPoints);
             if (_bluePoints == 3) {
                 Debug.Log("Blue wins");
+                _isGameFinished = true;
             }else if (_redPoints == 3) {
                 Debug.Log("Red wins");
+                _isGameFinished = true;
             }
             ResetGame();
+
+            if (_isGameFinished) {
+                var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
+                string username = BluePlayer.GetComponent<PhotonView>().Owner.NickName;
+                photonView.RPC(nameof(EndGameRPC), RpcTarget.All, winner, username);
+            }
+        }
+
+        public void BackToMenu() {
+            PhotonNetwork.LeaveRoom();
         }
         #endregion
 
@@ -89,8 +113,14 @@ namespace Core {
 
         [PunRPC]
         private void SetPointsRPC(int bluePoints, int redPoints) {
-            bluePointsText.text = bluePoints.ToString();
-            redPointsText.text = redPoints.ToString();
+            _uiManager.SetPoints(bluePoints, redPoints);
+        }
+
+        [PunRPC] 
+        private void EndGameRPC(TeamSelector.Team winner, string username) {
+            _uiManager.EndPanel(winner, username);
+            if (BluePlayer != null) BluePlayer.DeactivateControls();
+            if (RedPlayer != null) RedPlayer.DeactivateControls();
         }
         
         private void ResetGame() {
@@ -103,8 +133,8 @@ namespace Core {
         [PunRPC]
         private void ResetGameRPC(Vector3 blueGoalPos, Vector3 redGoalPos) {
             ball.ResetBall(ballSpawnPoint.position);
-            if (BluePlayer != null) BluePlayer.position = blueSpawnPoint.position;
-            if (RedPlayer != null) RedPlayer.position = redSpawnPoint.position;
+            if (BluePlayer != null) BluePlayer.SetPosition(blueSpawnPoint.position);
+            if (RedPlayer != null) RedPlayer.SetPosition(redSpawnPoint.position);
 
             blueGoal.position = blueGoalPos;
             redGoal.position = redGoalPos;

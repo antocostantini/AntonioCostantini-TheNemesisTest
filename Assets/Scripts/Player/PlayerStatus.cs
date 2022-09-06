@@ -3,6 +3,7 @@ using Core;
 using Menu;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player {
     /// <summary>
@@ -34,11 +35,23 @@ namespace Player {
         private void Start() {
             switch (_team) {
                 case TeamSelector.Team.Blue:
-                    GameManager.Instance.BluePlayer = transform;
+                    GameManager.Instance.BluePlayer = this;
                     break;
                 case TeamSelector.Team.Red:
-                    GameManager.Instance.RedPlayer = transform;
+                    GameManager.Instance.RedPlayer = this;
                     break;
+            }
+        }
+        #endregion
+
+        #region Public Methods
+        public void SetPosition(Vector3 pos) {
+            transform.position = pos;
+        }
+
+        public void DeactivateControls() {
+            if (TryGetComponent<PlayerInput>(out var playerInput)) {
+                playerInput.enabled = false;
             }
         }
         #endregion

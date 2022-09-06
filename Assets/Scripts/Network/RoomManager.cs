@@ -5,13 +5,14 @@ using Player;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utility;
 
 namespace Network {
     /// <summary>
     /// Component used to carry information about the players from the menu to the main scene
     /// </summary>
     [RequireComponent(typeof(PhotonView))]
-    public class RoomManager : MonoBehaviourPunCallbacks {
+    public class RoomManager : Singleton<RoomManager> {
         #region Public Variables
         [SerializeField] private GameObject playerManagerPrefab;
         #endregion
@@ -21,17 +22,17 @@ namespace Network {
         #endregion
 
         #region Behaviour Callbacks
-        private void Awake() {
+
+        protected override void Awake() {
+            base.Awake();
             DontDestroyOnLoad(this);
         }
 
-        public override void OnEnable() {
-            base.OnEnable();
+        public void OnEnable() {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        public override void OnDisable() {
-            base.OnDisable();
+        public void OnDisable() {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
         #endregion
