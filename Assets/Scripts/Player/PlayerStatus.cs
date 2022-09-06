@@ -1,3 +1,5 @@
+using System;
+using Core;
 using Menu;
 using Photon.Pun;
 using UnityEngine;
@@ -15,14 +17,29 @@ namespace Player {
         [SerializeField] private Material redMaterial;
         #endregion
 
+        #region Private Variables
+        private TeamSelector.Team _team;
+        #endregion
+
         #region Behaviour Callbacks
         private void Awake() {
             var photonView = GetComponent<PhotonView>();
-            var team = (TeamSelector.Team)photonView.InstantiationData[0];
-            meshRenderer.material = team == TeamSelector.Team.Blue ? blueMaterial : redMaterial;
+            _team = (TeamSelector.Team)photonView.InstantiationData[0];
+            meshRenderer.material = _team == TeamSelector.Team.Blue ? blueMaterial : redMaterial;
 #if UNITY_EDITOR
             gameObject.name = $"{photonView.Owner.NickName} Player Controller";
 #endif
+        }
+
+        private void Start() {
+            switch (_team) {
+                case TeamSelector.Team.Blue:
+                    GameManager.Instance.BluePlayer = transform;
+                    break;
+                case TeamSelector.Team.Red:
+                    GameManager.Instance.RedPlayer = transform;
+                    break;
+            }
         }
         #endregion
     }

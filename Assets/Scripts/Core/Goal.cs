@@ -1,15 +1,22 @@
 using Menu;
+using Photon.Pun;
 using UnityEngine;
 
 namespace Core {
     public class Goal : MonoBehaviour {
         #region Public Variables
         [SerializeField] private TeamSelector.Team team;
+        [SerializeField] private Collider goalCollider;
         #endregion
 
         #region Behaviour Callbacks
+        private void Awake() {
+            if (!PhotonNetwork.IsMasterClient) 
+                Destroy(goalCollider);  // only the master client needs to get notified on collisions
+        }
+
         private void OnTriggerEnter(Collider other) {
-            Debug.Log($"Goal for the {team} team!");
+            GameManager.Instance.Goal(team);
         }
         #endregion
     }

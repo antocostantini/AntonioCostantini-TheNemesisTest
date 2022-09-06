@@ -145,6 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 2
+  goalCollider: {fileID: 6889447496008825079}
 --- !u!54 &-2772135650419165022
 Rigidbody:
   m_ObjectHideFlags: 0
