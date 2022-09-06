@@ -5,6 +5,9 @@ using UnityEngine;
 using Utility;
 
 namespace Network {
+    /// <summary>
+    /// Manages the network for the main menu
+    /// </summary>
     [RequireComponent(typeof(PhotonView))]
     public class MenuNetworkManager : NetworkSingleton<MenuNetworkManager> {
         #region Private Variables
@@ -16,7 +19,6 @@ namespace Network {
         #endregion
 
         #region Properties
-
         public bool AutomaticMatchmaking { private get; set; } = false;
         #endregion
         

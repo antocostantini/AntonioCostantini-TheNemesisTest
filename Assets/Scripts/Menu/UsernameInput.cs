@@ -2,6 +2,9 @@ using TMPro;
 using UnityEngine;
 
 namespace Menu {
+    /// <summary>
+    /// Components used to memorize the local username
+    /// </summary>
     public class UsernameInput : MonoBehaviour {
         #region Private Variables
         private TMP_InputField _inputField;
@@ -25,7 +28,10 @@ namespace Menu {
         }
         #endregion
 
-        #region Private Methods
+        #region Private Methods.
+        /// <summary>
+        /// Saves the username to the playerprefs
+        /// </summary>
         private void SaveUsername(string username) {
             if(!string.IsNullOrWhiteSpace(username)) {
                 PlayerPrefs.SetString("user", username);
