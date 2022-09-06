@@ -12,12 +12,12 @@ namespace Utility {
 
         #region Behaviour Callbacks
         protected virtual void Awake() {
-            if (_instance != null) {
-                Destroy(this.gameObject);
-                return;
+            if (_instance == null) {
+                _instance = this as T;
             }
-
-            _instance = this as T;
+            else {
+                Destroy(this.gameObject);
+            }
         }
         #endregion
     }

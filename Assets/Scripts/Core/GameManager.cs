@@ -4,7 +4,6 @@ using Photon.Pun;
 using Player;
 using UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Utility;
 using Random = UnityEngine.Random;
 
@@ -26,6 +25,8 @@ namespace Core {
         [Space]
         [SerializeField] private MeshRenderer blueGoalSpawnZone;
         [SerializeField] private MeshRenderer redGoalSpawnZone;
+        [Space]
+        [SerializeField] private GameObject rematchUtility;
         
         #endregion
 
@@ -51,7 +52,7 @@ namespace Core {
         public override void OnLeftRoom() {
             base.OnLeftRoom();
             Destroy(RoomManager.Instance.gameObject);
-            SceneManager.LoadScene(0);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
 
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
@@ -119,6 +120,14 @@ namespace Core {
         /// Leaves the room to return back to the menu
         /// </summary>
         public void BackToMenu() {
+            PhotonNetwork.LeaveRoom();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Matchmaking() {
+            Instantiate(rematchUtility);
             PhotonNetwork.LeaveRoom();
         }
         #endregion
