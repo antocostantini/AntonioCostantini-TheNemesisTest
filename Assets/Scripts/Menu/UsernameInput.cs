@@ -17,6 +17,7 @@ namespace Menu {
 
         private void Start() {
             _inputField.text = PlayerPrefs.GetString("user", string.Empty);
+            _inputField.onEndEdit.Invoke(_inputField.text);
         }
 
         private void OnEnable() {
