@@ -15,6 +15,7 @@ namespace UI {
         [SerializeField] private GameObject endPanel;
         [SerializeField] private TMP_Text winText;
         [SerializeField] private TMP_Text disconnectionText;
+        [SerializeField] private TMP_Text countdownText;
         [SerializeField] private Color blueColor;
         [SerializeField] private Color redColor;
         #endregion
@@ -63,6 +64,30 @@ namespace UI {
             disconnectionText.SetText($"{disconnectedPlayer} disconnected");
             disconnectionText.gameObject.SetActive(true);
             endPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Activates the countdown text with the team color
+        /// </summary>
+        /// <param name="team">The team for the color</param>
+        public void ActivateCountDown(TeamSelector.Team team) {
+            countdownText.color = team == TeamSelector.Team.Blue ? blueColor : redColor;
+            countdownText.gameObject.SetActive(true);
+        }
+        
+        /// <summary>
+        /// Sets the countdown text
+        /// </summary>
+        /// <param name="message">The string to be set</param>
+        public void Countdown(string message) {
+            countdownText.SetText(message);
+        }
+        
+        /// <summary>
+        /// Deactivates the countdown text
+        /// </summary>
+        public void DeactivateCountDown() {
+            countdownText.gameObject.SetActive(false);
         }
         #endregion
     }

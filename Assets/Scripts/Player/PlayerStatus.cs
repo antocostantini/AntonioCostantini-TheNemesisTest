@@ -59,6 +59,15 @@ namespace Player {
         }
 
         /// <summary>
+        /// Activates the controls for this player
+        /// </summary>
+        public void ActivateControls() {
+            if (TryGetComponent<PlayerInput>(out var playerInput)) {
+                playerInput.enabled = true;
+            }
+        }
+        
+        /// <summary>
         /// Deactivates the controls for this player
         /// </summary>
         public void DeactivateControls() {

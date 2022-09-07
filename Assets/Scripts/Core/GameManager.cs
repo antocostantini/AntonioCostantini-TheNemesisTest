@@ -1,3 +1,4 @@
+using System.Collections;
 using Menu;
 using Network;
 using Photon.Pun;
@@ -35,6 +36,8 @@ namespace Core {
         private int _bluePoints = 0;
         private int _redPoints = 0;
         private bool _isGameFinished = false;
+
+        private Coroutine _countdownCo;
         #endregion
 
         #region Properties
@@ -58,6 +61,8 @@ namespace Core {
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
             base.OnPlayerLeftRoom(otherPlayer);
             if(_isGameFinished) return;
+            if(_countdownCo != null) StopCoroutine(_countdownCo);
+            _uiManager.DeactivateCountDown();
             if (Equals(BluePlayer.PhotonView.Owner, otherPlayer)) {
                 EndGameForDisconnection(TeamSelector.Team.Red, RedPlayer.Username, otherPlayer.NickName);
             }
@@ -99,10 +104,10 @@ namespace Core {
             photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _bluePoints, _redPoints);
             if (_bluePoints == 3) {
                 Debug.Log("Blue wins");
-                photonView.RPC(nameof(IsGameFinished), RpcTarget.All, true);
+                photonView.RPC(nameof(IsGameFinishedRPC), RpcTarget.All, true);
             }else if (_redPoints == 3) {
                 Debug.Log("Red wins");
-                photonView.RPC(nameof(IsGameFinished), RpcTarget.All, true);
+                photonView.RPC(nameof(IsGameFinishedRPC), RpcTarget.All, true);
             }
             
             if (_isGameFinished) {
@@ -116,6 +121,7 @@ namespace Core {
                 photonView.RPC(nameof(EndGameRPC), RpcTarget.All, winner, username);
             }
             else {
+                photonView.RPC(nameof(CountdownRPC), RpcTarget.All, team);
                 ResetGame();
             }
         }
@@ -162,8 +168,7 @@ namespace Core {
         /// </summary>
         private void EndGameForDisconnection(TeamSelector.Team winner, string username, string disconnectedPlayer) {
             _uiManager.EndPanelForDisconnection(winner, username, disconnectedPlayer);
-            if (BluePlayer != null) BluePlayer.DeactivateControls();
-            if (RedPlayer != null) RedPlayer.DeactivateControls();
+            DeactivatePlayersControls();
         }
         
         /// <summary>
@@ -172,8 +177,7 @@ namespace Core {
         [PunRPC] 
         private void EndGameRPC(TeamSelector.Team winner, string username) {
             _uiManager.EndPanel(winner, username);
-            if (BluePlayer != null) BluePlayer.DeactivateControls();
-            if (RedPlayer != null) RedPlayer.DeactivateControls();
+            DeactivatePlayersControls();
         }
         
         /// <summary>
@@ -201,9 +205,56 @@ namespace Core {
             redGoal.position = redGoalPos;
         }
 
+        /// <summary>
+        /// Sets the value of <see cref="_isGameFinished"/> for both clients
+        /// </summary>
+        /// <param name="value">The new value</param>
         [PunRPC]
-        private void IsGameFinished(bool value) {
+        private void IsGameFinishedRPC(bool value) {
             _isGameFinished = value;
+        }
+        
+        /// <summary>
+        /// RPC to start the countdown over the network
+        /// </summary>
+        /// <param name="team">The team that scored</param>
+        [PunRPC]
+        private void CountdownRPC(TeamSelector.Team team) {
+            _countdownCo = StartCoroutine(nameof(CountdownCo), team);
+        }
+
+        /// <summary>
+        /// The coroutine for the countdown
+        /// </summary>
+        /// <param name="team">The team that scored</param>
+        private IEnumerator CountdownCo(TeamSelector.Team team) {
+            DeactivatePlayersControls();
+            _uiManager.ActivateCountDown(team);
+            for (int i = 3; i >= 0; i--) {
+                if(i != 0 )
+                    _uiManager.Countdown(i.ToString());
+                else
+                    _uiManager.Countdown("Go!");
+                yield return new WaitForSeconds(1f);
+            }
+            _uiManager.DeactivateCountDown();
+            ActivatePlayersControls();
+        }
+
+        /// <summary>
+        /// Activates the controls for the players
+        /// </summary>
+        private void ActivatePlayersControls() {
+            if (BluePlayer != null) BluePlayer.ActivateControls();
+            if (RedPlayer != null) RedPlayer.ActivateControls();
+        }
+        
+        /// <summary>
+        /// Deactivates the controls for the players
+        /// </summary>
+        private void DeactivatePlayersControls() {
+            if (BluePlayer != null) BluePlayer.DeactivateControls();
+            if (RedPlayer != null) RedPlayer.DeactivateControls();
         }
         #endregion
     }
