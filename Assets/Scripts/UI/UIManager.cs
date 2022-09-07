@@ -1,3 +1,5 @@
+using System;
+using DG.Tweening;
 using Menu;
 using TMPro;
 using UnityEngine;
@@ -24,9 +26,17 @@ namespace UI {
         /// <summary>
         /// Updates the points on screen
         /// </summary>
-        public void SetPoints(int bluePoints, int redPoints) {
-            bluePointsText.text = bluePoints.ToString();
-            redPointsText.text = redPoints.ToString();
+        public void SetPoints(int points, TeamSelector.Team team) {
+            switch (team) {
+                case TeamSelector.Team.Blue:
+                    bluePointsText.text = points.ToString();
+                    bluePointsText.rectTransform.DOPunchScale(Vector3.one * .5f, 1f, 4, .2f);
+                    break;
+                case TeamSelector.Team.Red:
+                    redPointsText.text = points.ToString();
+                    redPointsText.rectTransform.DOPunchScale(Vector3.one * .5f, 1f, 4, .2f);
+                    break;
+            }
         }
 
         /// <summary>

@@ -96,12 +96,13 @@ namespace Core {
             switch (team) {
                 case TeamSelector.Team.Blue:
                     _bluePoints++;
+                    photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _bluePoints, team);
                     break;
                 case TeamSelector.Team.Red:
                     _redPoints++;
+                    photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _redPoints, team);
                     break;
             }
-            photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _bluePoints, _redPoints);
             if (_bluePoints == 3) {
                 Debug.Log("Blue wins");
                 photonView.RPC(nameof(IsGameFinishedRPC), RpcTarget.All, true);
@@ -159,8 +160,8 @@ namespace Core {
         /// RPC to update the teams' points
         /// </summary>
         [PunRPC]
-        private void SetPointsRPC(int bluePoints, int redPoints) {
-            _uiManager.SetPoints(bluePoints, redPoints);
+        private void SetPointsRPC(int points, TeamSelector.Team team) {
+            _uiManager.SetPoints(points, team);
         }
 
         /// <summary>
