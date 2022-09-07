@@ -57,6 +57,7 @@ namespace Core {
 
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) {
             base.OnPlayerLeftRoom(otherPlayer);
+            if(_isGameFinished) return;
             if (Equals(BluePlayer.PhotonView.Owner, otherPlayer)) {
                 EndGameForDisconnection(TeamSelector.Team.Red, RedPlayer.Username, otherPlayer.NickName);
             }
@@ -86,6 +87,7 @@ namespace Core {
         /// </summary>
         /// <param name="team">The team that scored</param>
         public void Goal(TeamSelector.Team team) {
+            if(_isGameFinished) return;
             switch (team) {
                 case TeamSelector.Team.Blue:
                     _bluePoints++;
@@ -97,13 +99,12 @@ namespace Core {
             photonView.RPC(nameof(SetPointsRPC), RpcTarget.All, _bluePoints, _redPoints);
             if (_bluePoints == 3) {
                 Debug.Log("Blue wins");
-                _isGameFinished = true;
+                photonView.RPC(nameof(IsGameFinished), RpcTarget.All, true);
             }else if (_redPoints == 3) {
                 Debug.Log("Red wins");
-                _isGameFinished = true;
+                photonView.RPC(nameof(IsGameFinished), RpcTarget.All, true);
             }
-            ResetGame();
-
+            
             if (_isGameFinished) {
                 var winner = _bluePoints == 3 ? TeamSelector.Team.Blue : TeamSelector.Team.Red;
 #pragma warning disable CS8509
@@ -113,6 +114,9 @@ namespace Core {
                 };
 #pragma warning restore CS8509
                 photonView.RPC(nameof(EndGameRPC), RpcTarget.All, winner, username);
+            }
+            else {
+                ResetGame();
             }
         }
 
@@ -195,6 +199,11 @@ namespace Core {
 
             blueGoal.position = blueGoalPos;
             redGoal.position = redGoalPos;
+        }
+
+        [PunRPC]
+        private void IsGameFinished(bool value) {
+            _isGameFinished = value;
         }
         #endregion
     }
