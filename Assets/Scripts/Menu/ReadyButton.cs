@@ -18,8 +18,8 @@ namespace Menu {
         #endregion
 
         #region Behaviour Callbacks
-        protected override void Start() {
-            base.Start();
+        protected override void Awake() {
+            base.Awake();
             _button = GetComponent<Button>();
         }
         #endregion
@@ -46,7 +46,7 @@ namespace Menu {
         /// Sets the ready button as interactable or not
         /// </summary>
         public void SetAsInteractable(bool interactable) {
-            _button.interactable = interactable;
+            if(_button) _button.interactable = interactable;
         }
         #endregion
     }
