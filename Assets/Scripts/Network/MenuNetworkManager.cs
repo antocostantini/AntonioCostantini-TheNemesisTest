@@ -50,8 +50,6 @@ namespace Network {
         public override void OnJoinedRoom() {
             base.OnJoinedRoom();
             Debug.Log("Joined room with " + PhotonNetwork.CurrentRoom.Players.Count + " players");
-            if (!PhotonNetwork.IsMasterClient) 
-                _menuManager.OpenPage(_menuManager.PreselectionPage);
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message) {
@@ -67,8 +65,7 @@ namespace Network {
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer) {
             base.OnPlayerEnteredRoom(newPlayer);
             Debug.Log(newPlayer.NickName + " has joined the room: " + PhotonNetwork.CurrentRoom.Players.Count + " players");
-            _menuManager.OpenPage(_menuManager.PreselectionPage);
-            SetPlayersUsernames();
+            SetUpPreselectionPage();
             // we close the room when its full to prevent other players from entering if one player leaves
             PhotonNetwork.CurrentRoom.IsOpen = false;
         }
@@ -122,22 +119,23 @@ namespace Network {
         }
 
         /// <summary>
-        /// Sets both players' usernames for the menu
+        /// Sets both players' usernames for the preselection page and activates it
         /// </summary>
-        private void SetPlayersUsernames() {
+        private void SetUpPreselectionPage() {
             string user1 = PhotonNetwork.PlayerList[0].NickName;
             string user2 = PhotonNetwork.PlayerList[1].NickName;
-            photonView.RPC(nameof(SetPlayersUsernamesRPC), RpcTarget.All, user1, user2);
+            photonView.RPC(nameof(SetUpPreselectionPageRPC), RpcTarget.All, user1, user2);
         }
 
         /// <summary>
-        /// RPC to set the players' usernames on both clients 
+        /// RPC to set the players' usernames on both clients and open the preselectionpage
         /// </summary>
         /// <param name="user1">Player 1 username</param>
         /// <param name="user2">Player 2 username</param>
         [PunRPC]
-        private void SetPlayersUsernamesRPC(string user1, string user2) {
+        private void SetUpPreselectionPageRPC(string user1, string user2) {
             _menuManager.SetPlayersUsernames(user1, user2);
+            _menuManager.OpenPage(_menuManager.PreselectionPage);
         }
 
         /// <summary>
