@@ -48,8 +48,10 @@ namespace Core {
         #region Behaviour Callbacks
         private void Start() {
             _uiManager = UIManager.Instance;
-            if(PhotonNetwork.IsMasterClient)
+            if(PhotonNetwork.IsMasterClient) {
                 ResetGame();
+                photonView.RPC(nameof(CountdownRPC), RpcTarget.All, TeamSelector.Team.Neutral);
+            }
         }
 
         public override void OnLeftRoom() {
